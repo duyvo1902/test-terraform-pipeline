@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-  install-localstacl:
+  setup-localstack:
     runs-on: ubuntu-latest
     steps:
       - name: Start LocalStack
@@ -34,8 +34,7 @@ jobs:
           echo "Startup complete"          
       - name: Run some Tests against LocalStack
         run: |
-          awslocal s3 mb s3://test
-          awslocal s3 ls
+          awslocal s3api list-buckets
           echo "Test Execution complete!"          
       # - name: Push Zip to S3
       #   uses: jakejarvis/s3-sync-action@v0.3.1
