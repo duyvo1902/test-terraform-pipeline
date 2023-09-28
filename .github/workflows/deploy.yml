@@ -29,7 +29,7 @@ jobs:
           repo: ${{ github.repository }}
           ref: ${{ github.ref }}
           path: "."
-          ext: ".yml"
+          ext: ".tf"
   Test:
     needs: list-files
     strategy:
