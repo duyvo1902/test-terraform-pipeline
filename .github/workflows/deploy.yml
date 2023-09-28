@@ -45,7 +45,7 @@ jobs:
           terraform init -upgrade
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve
+        run: terraform apply --auto-approve
 
       - name: Run some Tests against LocalStack
         run: |
