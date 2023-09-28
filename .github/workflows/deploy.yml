@@ -74,14 +74,10 @@ jobs:
         run: |
           terraform fmt
           terraform init -upgrade
+          ls
 
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
-          with:
-            repo: ${{ github.repository }}
-            ref: ${{ github.ref }}
-            path: "."
-            ext: ".tf"
+      # - name: Terraform Apply
+      #   run: terraform apply -auto-approve
 
       - name: Run some Tests against LocalStack
         run: |
