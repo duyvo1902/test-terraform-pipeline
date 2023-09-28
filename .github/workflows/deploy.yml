@@ -56,8 +56,13 @@ jobs:
           echo "Startup complete"          
       - name: Run some Tests against LocalStack
         run: |
+          echo "Create new S3 bucket"
+          awslocal s3api create-bucket --bucket sample-bucket
+          echo "Check new S3 bucket"
           awslocal s3api list-buckets
-          awslocal s3api delete-bucket --bucket "webfile"
+          echo "Detele new S3 bucket"
+          awslocal s3api delete-bucket --bucket "sample-bucket"
+           echo "Check new S3 bucket"
           awslocal s3api list-buckets
 
       # - name: Push Zip to S3
