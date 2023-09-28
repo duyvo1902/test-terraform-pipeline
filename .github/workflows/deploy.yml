@@ -14,8 +14,43 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: Check file
+      - name: Start LocalStack
         run: |
+          pip install localstack awscli-local[ver1] # install LocalStack cli and awslocal
+          docker pull localstack/localstack         # Make sure to pull the latest version of the image
+          localstack start -d                       # Start LocalStack in the background
+          
+          echo "Waiting for LocalStack startup..."  # Wait 30 seconds for the LocalStack container
+          localstack wait -t 30                     # to become ready before timing out 
+          echo "Startup complete"          
+      - name: Run some Tests against LocalStack
+        run: |
+          echo "Create new S3 bucket"
+          awslocal s3api create-bucket --bucket sample-bucket
+          echo "Check new S3 bucket"
+          awslocal s3api list-buckets
+          echo "Detele new S3 bucket"
+          awslocal s3api delete-bucket --bucket "sample-bucket"
+           echo "Check new S3 bucket"
+          awslocal s3api list-buckets
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform Init
+        id: init
+        run: |
+          ls
+          terraform fmt
+          terraform init -upgrade
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+
+      - name: Run some Tests against LocalStack
+        run: |
+          echo "Check new S3 bucket"
+          awslocal s3api list-buckets
 
   list-files:
     needs: prepare
@@ -41,49 +76,3 @@ jobs:
       - name: Output results
         run: |
           echo ${{ matrix.paths }}
-
-  setup-localstack:
-    needs: prepare
-    runs-on: ubuntu-latest
-    steps:
-      - name: Start LocalStack
-        run: |
-          pip install localstack awscli-local[ver1] # install LocalStack cli and awslocal
-          docker pull localstack/localstack         # Make sure to pull the latest version of the image
-          localstack start -d                       # Start LocalStack in the background
-          
-          echo "Waiting for LocalStack startup..."  # Wait 30 seconds for the LocalStack container
-          localstack wait -t 30                     # to become ready before timing out 
-          echo "Startup complete"          
-      # - name: Run some Tests against LocalStack
-      #   run: |
-      #     echo "Create new S3 bucket"
-      #     awslocal s3api create-bucket --bucket sample-bucket
-      #     echo "Check new S3 bucket"
-      #     awslocal s3api list-buckets
-      #     echo "Detele new S3 bucket"
-      #     awslocal s3api delete-bucket --bucket "sample-bucket"
-      #      echo "Check new S3 bucket"
-      #     awslocal s3api list-buckets
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-
-      - name: Terraform Init
-        id: init
-        run: |
-          ls
-          terraform fmt
-          terraform init -upgrade
-
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
-        env:
-          TF_VAR_aws_s3_bucket: ${{ secrets.AWS_S3_BUCKET }}
-          TF_VAR_aws_region: ${{ secrets.AWS_REGION }}
-          TF_VAR_jwtSecret: ${{ secrets.JWT_SECRET }}
-
-      - name: Run some Tests against LocalStack
-        run: |
-          echo "Check new S3 bucket"
-          awslocal s3api list-buckets
