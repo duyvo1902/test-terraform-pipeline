@@ -72,6 +72,7 @@ jobs:
       - name: Terraform Init
         id: init
         run: |
+          pwd
           terraform fmt
           terraform init -upgrade
 
