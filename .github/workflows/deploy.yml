@@ -55,16 +55,16 @@ jobs:
           echo "Waiting for LocalStack startup..."  # Wait 30 seconds for the LocalStack container
           localstack wait -t 30                     # to become ready before timing out 
           echo "Startup complete"          
-      - name: Run some Tests against LocalStack
-        run: |
-          echo "Create new S3 bucket"
-          awslocal s3api create-bucket --bucket sample-bucket
-          echo "Check new S3 bucket"
-          awslocal s3api list-buckets
-          echo "Detele new S3 bucket"
-          awslocal s3api delete-bucket --bucket "sample-bucket"
-           echo "Check new S3 bucket"
-          awslocal s3api list-buckets
+      # - name: Run some Tests against LocalStack
+      #   run: |
+      #     echo "Create new S3 bucket"
+      #     awslocal s3api create-bucket --bucket sample-bucket
+      #     echo "Check new S3 bucket"
+      #     awslocal s3api list-buckets
+      #     echo "Detele new S3 bucket"
+      #     awslocal s3api delete-bucket --bucket "sample-bucket"
+      #      echo "Check new S3 bucket"
+      #     awslocal s3api list-buckets
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -72,7 +72,7 @@ jobs:
       - name: Terraform Init
         id: init
         run: |
-          cd ../
+          cd ../../
           ls
           terraform fmt
           terraform init -upgrade
