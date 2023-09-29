@@ -31,9 +31,10 @@ jobs:
           
       - name: Checkout main branch from Github
         uses: actions/checkout@v2
+
       - name: Create new S3 bucket
         run: |
-          aws s3api create-bucket --bucket $AWS_S3_BUCKET --endpoint-url http://localhost:4566 --region $AWS_REGION
+          aws s3api create-bucket --bucket "test" --endpoint-url http://localhost:4566 --region "us-east-1"
           aws s3 ls --endpoint-url  http://localhost:4566 --region $AWS_REGION
 
   # prepare:
