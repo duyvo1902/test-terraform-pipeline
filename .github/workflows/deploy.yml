@@ -19,7 +19,7 @@ jobs:
       localstack:
         image: localstack/localstack:0.13.3
         ports:
-          - 4567:4567
+          - 4566:4566
         env:
           DEFAULT_REGION: us-east-1
     steps:
@@ -28,7 +28,7 @@ jobs:
           docker network prune --force --filter "label=f88420"
           docker network create nw_2cd6372c4a34439
 
-          docker create --name localstack --label f88420 --network nw_2cd6372c4a34439 --network-alias localstack -p 4567:4567  -e "SERVICES=s3,cloudwatch" -e "HOSTNAME_EXTERNAL=localstack" -e "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" -e "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" -e "AWS_REGION=$AWS_REGION" localstack/localstack:0.13.3
+          docker create --name localstack --label f88420 --network nw_2cd6372c4a34439 --network-alias localstack -p 4566:4566  -e "SERVICES=s3,cloudwatch" -e "HOSTNAME_EXTERNAL=localstack" -e "AWS_REGION=$AWS_REGION" localstack/localstack:0.13.3
           docker start localstack
           docker port localstack
           
@@ -36,8 +36,8 @@ jobs:
         uses: actions/checkout@v2
       - name: Create new S3 bucket
         run: |
-          awslocal s3api create-bucket --bucket $AWS_S3_BUCKET --endpoint-url http://localhost:4567 --region $AWS_REGION
-          awslocal s3 ls --endpoint-url  http://localhost:4567 --region $AWS_REGION
+          awslocal s3api create-bucket --bucket $AWS_S3_BUCKET --endpoint-url http://localhost:4566 --region $AWS_REGION
+          awslocal s3 ls --endpoint-url  http://localhost:4566 --region $AWS_REGION
 
   # prepare:
   #   runs-on: ubuntu-latest
