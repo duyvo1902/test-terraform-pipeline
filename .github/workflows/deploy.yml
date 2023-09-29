@@ -22,9 +22,6 @@ jobs:
           - 4566:4566
         env:
           DEFAULT_REGION: us-east-1
-
-  start-localstack:
-    runs-on: ubuntu-latest
     steps:
       - name: Start service - Localstack and MySQL
         run: |
