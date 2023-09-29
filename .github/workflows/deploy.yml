@@ -30,35 +30,24 @@ jobs:
           docker create --name localstack --label f88420 --network nw_2cd6372c4a34439 --network-alias localstack -p 4566:4566  -e "SERVICES=s3,cloudwatch" -e "HOSTNAME_EXTERNAL=localstack" -e "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" -e "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" -e "AWS_REGION=$AWS_REGION" localstack/localstack:0.13.3
           
       - name: Checkout main branch from Github
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2  
 
-      - name: Create new S3 bucket
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform Init
+        id: init
         run: |
-          aws s3api create-bucket --bucket "test" --endpoint-url http://localhost:4566 --region "us-east-1"
-          aws s3 ls --endpoint-url  http://localhost:4566
+          terraform fmt
+          terraform init -upgrade
 
-  # prepare:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v3     
+      - name: Terraform Apply
+        run: terraform apply --auto-approve
 
-  #     - name: Setup Terraform
-  #       uses: hashicorp/setup-terraform@v2
-
-  #     - name: Terraform Init
-  #       id: init
-  #       run: |
-  #         terraform fmt
-  #         terraform init -upgrade
-
-  #     - name: Terraform Apply
-  #       run: terraform apply --auto-approve
-
-  #     - name: Run some Tests against LocalStack
-  #       run: |
-  #         echo "Check new S3 bucket"
-  #         awslocal s3api list-buckets
+      - name: Run some Tests against LocalStack
+        run: |
+          echo "Check new S3 bucket"
+          awslocal s3api list-buckets
 
   # list-files:
   #   needs: prepare
