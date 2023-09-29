@@ -12,8 +12,8 @@ jobs:
   automation:
     runs-on: ubuntu-latest
     env:
-      AWS_ACCESS_KEY_ID: "x"
-      AWS_SECRET_ACCESS_KEY: "x"
+      AWS_ACCESS_KEY_ID: "test"
+      AWS_SECRET_ACCESS_KEY: "test"
       AWS_PARAMSTORE_ENABLED: "false"
     services:
       localstack:
