@@ -25,15 +25,7 @@ jobs:
     steps:
       - name: Start service - Localstack
         run: |
-          docker run \
-          --rm -it \
-          -p 4566:4566 \
-          -p 4510-4559:4510-4559 \
-          localstack/localstack
-          # docker network prune --force --filter "label=f88420"
-          # docker network create nw_2cd6372c4a34439
-
-          # docker create --name localstack --label f88420 --network nw_2cd6372c4a34439 --network-alias localstack -p 4566:4566  -e "SERVICES=s3,cloudwatch" -e "HOSTNAME_EXTERNAL=localstack" -e "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" -e "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" -e "AWS_REGION=$AWS_REGION" localstack/localstack:0.13.3
+          docker run --rm -it -p 4566:4566 -p 4510-4559:4510-4559 localstack/localstack
           docker start localstack
           docker port localstack
           
