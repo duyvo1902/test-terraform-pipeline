@@ -23,6 +23,10 @@ jobs:
         env:
           DEFAULT_REGION: us-east-1
     steps:
+      - name: Health check localstack
+        run: |
+          awslocal s3api list-buckets
+          
       - name: Checkout main branch from Github
         uses: actions/checkout@v2  
 
