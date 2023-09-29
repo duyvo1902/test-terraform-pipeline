@@ -9,70 +9,86 @@ on:
       - main
 
 jobs:
-  prepare:
+  automation:
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: "x"
+      AWS_SECRET_ACCESS_KEY: "x"
+      AWS_PARAMSTORE_ENABLED: "false"
+    services:
+      localstack:
+        image: localstack/localstack:0.13.3
+        ports:
+          - 4566:4566
+        env:
+          DEFAULT_REGION: us-east-1
+
+  start-localstack:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Start LocalStack
+      - name: Start service - Localstack and MySQL
         run: |
-          pip install localstack awscli-local[ver1] # install LocalStack cli and awslocal
-          docker pull localstack/localstack         # Make sure to pull the latest version of the image
-          localstack start -d                       # Start LocalStack in the background
-          
-          echo "Waiting for LocalStack startup..."  # Wait 30 seconds for the LocalStack container
-          localstack wait -t 30                     # to become ready before timing out 
-          echo "Startup complete"          
-      - name: Run some Tests against LocalStack
+          docker network prune --force --filter "label=f88420"
+          docker network create nw_2cd6372c4a34439
+
+          docker create --name localstack --label f88420 --network nw_2cd6372c4a34439 --network-alias localstack -p 4566:4566  -e "SERVICES=s3,cloudwatch" -e "HOSTNAME_EXTERNAL=localstack" -e "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" -e "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" -e "AWS_REGION=$AWS_REGION" localstack/localstack:0.13.3
+          docker start localstack
+          docker port localstack
+
+          docker create --name mysql --label f88420 --network nw_2cd6372c4a34439 --network-alias mysql -p 3306:3306 --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3 useast.jfrog.lexisnexisrisk.com/tlmtcs-docker-dev-virtual/telematics/automation/db-test:master-dev
+          docker start mysql
+          docker port mysql
+      - name: Checkout main branch from Github
+        uses: actions/checkout@v2
+      - name: Create new S3 bucket
         run: |
-          echo "Create new S3 bucket"
-          awslocal s3api create-bucket --bucket sample-bucket
-          echo "Check new S3 bucket"
-          awslocal s3api list-buckets
-          echo "Detele new S3 bucket"
-          awslocal s3api delete-bucket --bucket "sample-bucket"
-           echo "Check new S3 bucket"
-          awslocal s3api list-buckets
+          aws s3api create-bucket --bucket $AWS_S3_BUCKET --endpoint-url http://localhost:4566 --region $AWS_REGION
+          aws s3 ls --endpoint-url  http://localhost:4566 --region $AWS_REGION
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
+  # prepare:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3     
 
-      - name: Terraform Init
-        id: init
-        run: |
-          ls
-          terraform fmt
-          terraform init -upgrade
+  #     - name: Setup Terraform
+  #       uses: hashicorp/setup-terraform@v2
 
-      - name: Terraform Apply
-        run: terraform apply --auto-approve
+  #     - name: Terraform Init
+  #       id: init
+  #       run: |
+  #         terraform fmt
+  #         terraform init -upgrade
 
-      - name: Run some Tests against LocalStack
-        run: |
-          echo "Check new S3 bucket"
-          awslocal s3api list-buckets
+  #     - name: Terraform Apply
+  #       run: terraform apply --auto-approve
 
-  list-files:
-    needs: prepare
-    runs-on: ubuntu-latest
-    outputs:
-      paths: ${{ steps.list-files.outputs.paths }}
-    steps:
-      - name: List Files
-        id: list-files
-        uses: mirko-felice/list-files-action@v3.0.5
-        with:
-          repo: ${{ github.repository }}
-          ref: ${{ github.ref }}
-          path: "."
-          ext: ".tf"
-  test:
-    needs: list-files
-    strategy:
-      matrix:
-        paths: ${{ fromJson(needs.list-files.outputs.paths) }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Output results
-        run: |
-          echo ${{ matrix.paths }}
+  #     - name: Run some Tests against LocalStack
+  #       run: |
+  #         echo "Check new S3 bucket"
+  #         awslocal s3api list-buckets
+
+  # list-files:
+  #   needs: prepare
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     paths: ${{ steps.list-files.outputs.paths }}
+  #   steps:
+  #     - name: List Files
+  #       id: list-files
+  #       uses: mirko-felice/list-files-action@v3.0.5
+  #       with:
+  #         repo: ${{ github.repository }}
+  #         ref: ${{ github.ref }}
+  #         path: "."
+  #         ext: ".tf"
+  # test:
+  #   needs: list-files
+  #   strategy:
+  #     matrix:
+  #       paths: ${{ fromJson(needs.list-files.outputs.paths) }}
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Output results
+  #       run: |
+  #         echo ${{ matrix.paths }}
