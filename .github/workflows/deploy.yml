@@ -26,7 +26,6 @@ jobs:
       - name: Create new S3 bucket
         run: |
           aws s3api create-bucket --bucket "DEV" --endpoint-url http://localhost:4566
-          aws s3api ls --endpoint-url http://localhost:4566
 
       - name: Checkout main branch from Github
         uses: actions/checkout@v2  
