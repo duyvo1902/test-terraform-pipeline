@@ -18,9 +18,7 @@ jobs:
           - 4566:4566
         env:
           DEFAULT_REGION: us-east-1
-          AWS_ACCESS_KEY_ID: "test"
-          AWS_SECRET_ACCESS_KEY: "test"
-          AWS_PARAMSTORE_ENABLED: "false"
+
     steps:
       - 
         name: Create new S3 bucket
