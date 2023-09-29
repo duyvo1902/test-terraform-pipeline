@@ -25,8 +25,8 @@ jobs:
     steps:
       - name: Health check localstack
         run: |
-          awslocal s3api list-buckets
-          
+          aws s3 ls --endpoint-url  http://localhost:4566
+
       - name: Checkout main branch from Github
         uses: actions/checkout@v2  
 
@@ -45,7 +45,7 @@ jobs:
       - name: Run some Tests against LocalStack
         run: |
           echo "Check new S3 bucket"
-          awslocal s3api list-buckets
+          aws s3 ls --endpoint-url  http://localhost:4566
 
   # list-files:
   #   needs: prepare
