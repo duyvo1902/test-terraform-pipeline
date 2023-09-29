@@ -25,7 +25,7 @@ jobs:
     steps:
       - name: Start service - Localstack
         run: |
-          docker run --rm -it -p 4566:4566 -p 4510-4559:4510-4559 localstack/localstack
+          docker run --rm -p 4566:4566 -p 4510-4559:4510-4559 localstack/localstack
           docker start localstack
           docker port localstack
           
