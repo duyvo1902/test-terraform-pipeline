@@ -16,11 +16,15 @@ jobs:
       AWS_SECRET_ACCESS_KEY: "test"
       AWS_PARAMSTORE_ENABLED: "false"
     services:
-      localstack:
-        image: localstack/localstack:0.13.3
+      aws:
+        image: localstack/localstack:2.1.0
         ports:
           - 4566:4566
         env:
+          DEBUG: 1
+          LAMBDA_DOCKER_NETWORK: my-local-aws-network
+          LAMBDA_REMOTE_DOCKER: 0
+          SERVICES: s3,sqs,secretsmanager
           DEFAULT_REGION: us-east-1
     steps:
       - name: Create new S3 bucket
