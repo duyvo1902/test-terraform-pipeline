@@ -46,16 +46,11 @@ jobs:
           terraform fmt
           terraform init -upgrade
 
-      - name: Terraform Plan
-        run: |
-          terraform plan
-        env: 
-          AWS_ACCESS_KEY_ID: "test"
-          AWS_SECRET_ACCESS_KEY: "test"
-
       - name: Terraform Apply
         run: terraform apply --auto-approve
         env:
+          AWS_ACCESS_KEY_ID: "test"
+          AWS_SECRET_ACCESS_KEY: "test"
           AWS_S3_BUCKET: "duy-bucket"
           AWS_REGION: "us-east-1"
 
