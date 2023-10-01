@@ -1,7 +1,7 @@
 resource "aws_s3_bucket" "duy_terraform" {
   bucket = var.bucket_name
   tags = {
-    Name       = "Duy bucket"
+    Name       = "duy-bucket"
     Enviroment = "Dev"
   }
 }

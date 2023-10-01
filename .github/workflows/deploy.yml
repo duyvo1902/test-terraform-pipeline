@@ -32,6 +32,7 @@ jobs:
         env: 
           AWS_ACCESS_KEY_ID: "test"
           AWS_SECRET_ACCESS_KEY: "test"
+          AWS_REGION: "us-east-1"
 
       - name: Checkout main branch from Github
         uses: actions/checkout@v2  
@@ -54,6 +55,9 @@ jobs:
 
       - name: Terraform Apply
         run: terraform apply --auto-approve
+        env:
+          AWS_S3_BUCKET: "duy-bucket"
+          AWS_REGION: "us-east-1"
 
       - name: Run some Tests against LocalStack
         run: |
