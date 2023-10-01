@@ -14,8 +14,6 @@ jobs:
     services:
       aws:
         image: localstack/localstack:2.1.0
-        ports:
-          - 4566:4566
         env:
           DEBUG: 1
           LAMBDA_DOCKER_NETWORK: my-local-aws-network
@@ -25,6 +23,11 @@ jobs:
           AWS_ACCESS_KEY_ID: "test"
           AWS_SECRET_ACCESS_KEY: "test"
           AWS_PARAMSTORE_ENABLED: "false"
+        ports:
+          - 4566:4566
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock
+
     steps:
       - name: Create new S3 bucket
         run: |
