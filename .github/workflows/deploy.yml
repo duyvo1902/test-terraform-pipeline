@@ -11,10 +11,6 @@ on:
 jobs:
   automation:
     runs-on: ubuntu-latest
-    env:
-      AWS_ACCESS_KEY_ID: "test"
-      AWS_SECRET_ACCESS_KEY: "test"
-      AWS_PARAMSTORE_ENABLED: "false"
     services:
       aws:
         image: localstack/localstack:2.1.0
@@ -26,6 +22,9 @@ jobs:
           LAMBDA_REMOTE_DOCKER: 0
           SERVICES: s3,sqs,secretsmanager
           DEFAULT_REGION: us-east-1
+          AWS_ACCESS_KEY_ID: "test"
+          AWS_SECRET_ACCESS_KEY: "test"
+          AWS_PARAMSTORE_ENABLED: "false"
     steps:
       - name: Create new S3 bucket
         run: |
