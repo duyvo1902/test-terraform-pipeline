@@ -54,6 +54,10 @@ jobs:
         run: |
           echo "Check new S3 bucket"
           aws s3 ls s3://duy-bucket-test-123
+        env: 
+          AWS_ACCESS_KEY_ID: "test"
+          AWS_SECRET_ACCESS_KEY: "test"
+          AWS_REGION: "us-east-1"
 
   # list-files:
   #   needs: prepare
