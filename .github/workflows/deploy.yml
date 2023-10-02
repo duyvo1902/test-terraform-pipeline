@@ -37,18 +37,25 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
 
-      - name: Terraform Init
-        id: init
-        run: |
-          terraform fmt
-          terraform init -upgrade
+      - name: Setup Terragrunt
+        uses: gruntwork-io/terragrunt-action@v1
 
-      - name: Terraform Apply
-        run: terraform apply --auto-approve
-        env:
-          AWS_ACCESS_KEY_ID: "test"
-          AWS_SECRET_ACCESS_KEY: "test"
-          AWS_REGION: "us-east-1"
+      - name: Terragrunt Apply
+        run: |
+          cd bdd
+          terragrunt apply
+      # - name: Terraform Init
+      #   id: init
+      #   run: |
+      #     terraform fmt
+      #     terraform init -upgrade
+
+      # - name: Terraform Apply
+      #   run: terraform apply --auto-approve
+      #   env:
+      #     AWS_ACCESS_KEY_ID: "test"
+      #     AWS_SECRET_ACCESS_KEY: "test"
+      #     AWS_REGION: "us-east-1"
 
       - name: Run some Tests against LocalStack
         run: |
