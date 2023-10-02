@@ -37,18 +37,14 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
 
-      - name: Setup Terragrunt
+      - name: Setup and run Terragrunt
         uses: gruntwork-io/terragrunt-action@v1
         with:
           tf_version: '1.4.6'
           tg_version: '0.46.3'
-          tg_dir: 'project'
-          tg_command: 'hclfmt --terragrunt-check --terragrunt-diff'
+          tg_dir: 'test-terraform-pipeline/dev'
+          tg_command: 'plan'
 
-      - name: Terragrunt Apply
-        run: |
-          cd bdd
-          terragrunt apply
       # - name: Terraform Init
       #   id: init
       #   run: |
