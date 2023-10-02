@@ -44,6 +44,10 @@ jobs:
           tg_version: '0.46.3'
           tg_dir: './dev'
           tg_command: 'plan'
+        env: 
+          AWS_ACCESS_KEY_ID: "test"
+          AWS_SECRET_ACCESS_KEY: "test"
+          AWS_REGION: "us-east-1"
 
       # - name: Terraform Init
       #   id: init
