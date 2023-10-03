@@ -42,7 +42,7 @@ jobs:
         with:
           tf_version: '1.4.6'
           tg_version: '0.46.3'
-          tg_dir: './dev'
+          tg_dir: './bdd'
           tg_command: 'plan'
         env: 
           AWS_ACCESS_KEY_ID: "test"
@@ -70,28 +70,3 @@ jobs:
           AWS_ACCESS_KEY_ID: "test"
           AWS_SECRET_ACCESS_KEY: "test"
           AWS_REGION: "us-east-1"
-
-  # list-files:
-  #   needs: prepare
-  #   runs-on: ubuntu-latest
-  #   outputs:
-  #     paths: ${{ steps.list-files.outputs.paths }}
-  #   steps:
-  #     - name: List Files
-  #       id: list-files
-  #       uses: mirko-felice/list-files-action@v3.0.5
-  #       with:
-  #         repo: ${{ github.repository }}
-  #         ref: ${{ github.ref }}
-  #         path: "."
-  #         ext: ".tf"
-  # test:
-  #   needs: list-files
-  #   strategy:
-  #     matrix:
-  #       paths: ${{ fromJson(needs.list-files.outputs.paths) }}
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Output results
-  #       run: |
-  #         echo ${{ matrix.paths }}
