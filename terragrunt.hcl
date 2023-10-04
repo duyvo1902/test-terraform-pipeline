@@ -11,11 +11,9 @@ remote_state {
     key = "${path_relative_to_include()}/terraform.tfstate"
     region         = "us-east-1"
     access_key     = "test"
-    secrect_key    = "test"
+    secret_key    = "test"
     encrypt        = true
     dynamodb_table = "my-lock-table"
-    endpoints = {
-    s3             = "http://s3.localhost.localstack.cloud:4566"
-     }
+    endpoint = "http://s3.localhost.localstack.cloud:4566"
   }
 }
