@@ -10,6 +10,8 @@ remote_state {
     bucket = "my-bucket-test-03"
     key = "${path_relative_to_include()}/terraform.tfstate"
     region         = "us-east-1"
+    access_key     = "test"
+    secrect_key    = "test"
     encrypt        = true
     dynamodb_table = "my-lock-table"
   }
