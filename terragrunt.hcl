@@ -14,6 +14,6 @@ remote_state {
     secret_key    = "test"
     encrypt        = true
     dynamodb_table = "my-lock-table"
-    endpoint = "http://s3.localhost.localstack.cloud:4566"
+    endpoint = "http://localhost:4566"
   }
 }
