@@ -1,3 +1,17 @@
+generate "main" {
+  path = "main.tf"
+  if_exists = "overwrite_terragrunt"
+  contents = <<EOF
+resource "aws_s3_bucket" "duy" {
+  bucket = "my-bucket-test"
+  tags = {
+    Name       = "My bucket"
+    Enviroment = "Dev"
+  }
+}
+EOF
+}
+
 generate "provider" {
   path = "provider.tf"
   if_exists = "overwrite_terragrunt"
