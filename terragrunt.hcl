@@ -1,19 +1,17 @@
-# test-terraform-pipeline/terragrunt.hcl
-remote_state {
-  backend = "s3"
-  generate = {
-    path      = "backend.tf"
-    if_exists = "overwrite_terragrunt"
-  }
+generate "provider" {
+  path = "provider.tf"
+  if_exists = "overwrite_terragrunt"
+  contents = <<EOF
+provider "aws" {
+  access_key                  = "test"
+  region                      = "us-east-1"
+  skip_credentials_validation = true
+  skip_metadata_api_check     = true
+  skip_requesting_account_id  = true
 
-  config = {
-    bucket = "my-bucket-test-03"
-    key = "${path_relative_to_include()}/terraform.tfstate"
-    region         = "us-east-1"
-    access_key     = "test"
-    secret_key    = "test"
-    encrypt        = true
-    dynamodb_table = "my-lock-table"
-    endpoint = "http://localhost:4566"
+  endpoints {
+    s3             = "http://localhost:4566"
   }
+}
+EOF
 }
