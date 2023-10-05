@@ -38,31 +38,32 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
 
-      - name: Setup and run Terragrunt
-        uses: gruntwork-io/terragrunt-action@v1
-        with:
-          tf_version: '1.4.6'
-          tg_version: '0.46.3'
-          tg_dir: './environments/bdd'
-          tg_command: 'plan'
-        env:
-          AWS_ENDPOINT_URL: "http://localhost:4566"
-          AWS_ACCESS_KEY_ID: "test"
-          AWS_SECRET_ACCESS_KEY: "test"
-          AWS_REGION: "us-east-1"
-
-      # - name: Terraform Init
-      #   id: init
-      #   run: |
-      #     terraform fmt
-      #     terraform init -upgrade
-
-      # - name: Terraform Apply
-      #   run: terraform apply --auto-approve
+      # - name: Setup and run Terragrunt
+      #   uses: gruntwork-io/terragrunt-action@v1
+      #   with:
+      #     tf_version: '1.4.6'
+      #     tg_version: '0.46.3'
+      #     tg_dir: './environments/bdd'
+      #     tg_command: 'plan'
       #   env:
+      #     AWS_ENDPOINT_URL: "http://localhost:4566"
       #     AWS_ACCESS_KEY_ID: "test"
       #     AWS_SECRET_ACCESS_KEY: "test"
       #     AWS_REGION: "us-east-1"
+
+      - name: Terraform Init
+        id: init
+        run: |
+          cd src
+          terraform fmt
+          terraform init -upgrade
+
+      - name: Terraform Apply
+        run: terraform apply --auto-approve
+        env:
+          AWS_ACCESS_KEY_ID: "test"
+          AWS_SECRET_ACCESS_KEY: "test"
+          AWS_REGION: "us-east-1"
 
       - name: Run some Tests against LocalStack
         run: |
