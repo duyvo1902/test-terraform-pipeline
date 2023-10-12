@@ -45,7 +45,7 @@ jobs:
           tf_version: '1.4.6'
           tg_version: '0.46.3'
           tg_dir: './environments/bdd'
-          tg_command: 'apply --auto-approve'
+          tg_command: 'apply --auto-approve --terragrunt-debug'
         env: 
           AWS_ACCESS_KEY_ID: "test"
           AWS_SECRET_ACCESS_KEY: "test"
