@@ -23,6 +23,12 @@ jobs:
           - 4566:4566
 
     steps:
+      - name: Checkout main branch from Github
+        uses: actions/checkout@v2  
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
       - name: Create new S3 bucket
         run: |
           aws --endpoint-url http://localhost:4566 s3api create-bucket --bucket my-bucket --region us-east-1
@@ -32,11 +38,6 @@ jobs:
           AWS_SECRET_ACCESS_KEY: "test"
           AWS_REGION: "us-east-1"
 
-      - name: Checkout main branch from Github
-        uses: actions/checkout@v2  
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
 
       - name: Setup and run Terragrunt
         uses: gruntwork-io/terragrunt-action@v1
@@ -45,6 +46,10 @@ jobs:
           tg_version: '0.46.3'
           tg_dir: './environments/bdd'
           tg_command: 'apply --auto-approve'
+        env: 
+          AWS_ACCESS_KEY_ID: "test"
+          AWS_SECRET_ACCESS_KEY: "test"
+          AWS_REGION: "us-east-1" 
 
       # - name: Terraform Init
       #   id: init
