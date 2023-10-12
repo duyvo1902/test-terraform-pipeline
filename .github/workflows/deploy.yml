@@ -51,7 +51,7 @@ jobs:
           terragrunt_version: '0.46.3'
       - name: 'Terragrunt Plan'
         run: |
-          terragrunt apply apply --auto-approve
+          terragrunt apply --auto-approve
       #- name: Setup and run Terragrunt
       #  uses: gruntwork-io/terragrunt-action@v1
       #  with:
