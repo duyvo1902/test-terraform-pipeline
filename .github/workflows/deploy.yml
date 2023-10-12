@@ -39,17 +39,30 @@ jobs:
           AWS_SECRET_ACCESS_KEY: "test"
           AWS_REGION: "us-east-1"
 
-      - name: Setup and run Terragrunt
-        uses: gruntwork-io/terragrunt-action@v1
+      - name: 'Terraform Setup'
+        uses: hashicorp/setup-terraform@v2
         with:
-          tf_version: '1.4.6'
-          tg_version: '0.46.3'
-          tg_dir: './environments/bdd'
-          tg_command: 'apply --auto-approve --terragrunt-debug'
-        env: 
-          AWS_ACCESS_KEY_ID: "test"
-          AWS_SECRET_ACCESS_KEY: "test"
-          AWS_REGION: "us-east-1" 
+          terraform_version: '1.4.6'
+          terraform_wrapper: false
+
+      - name: 'Terragrunt Setup'
+        uses: autero1/action-terragrunt@v1.2.0
+        with:
+          terragrunt_version: '0.46.3'
+      - name: 'Terragrunt Plan'
+        run: |
+          terragrunt apply apply --auto-approve
+      #- name: Setup and run Terragrunt
+      #  uses: gruntwork-io/terragrunt-action@v1
+      #  with:
+      #    tf_version: '1.4.6'
+      #    tg_version: '0.46.3'
+      #    tg_dir: './environments/bdd'
+      #    tg_command: 'apply --auto-approve --terragrunt-debug'
+      #  env: 
+      #    AWS_ACCESS_KEY_ID: "test"
+      #    AWS_SECRET_ACCESS_KEY: "test"
+      #    AWS_REGION: "us-east-1" 
 
       # - name: Terraform Init
       #   id: init
