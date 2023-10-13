@@ -1,12 +1,17 @@
 name: "terraform-deploy"
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+  workflow_dispatch:
+    inputs:
+      namespace:
+        type: choice
+        description: "Namespace to deploy to (e.g. deva)"
+        required: true
+        default: green
+        options:
+          - "dev"
+          - "bdd"
+          - "qa"
 
 jobs:
   automation:
@@ -35,6 +40,8 @@ jobs:
           terragrunt_version: '0.46.3'
       - name: 'Terragrunt Plan'
         run: |
+          echo "namespace=${{ github.event.inputs.namespace }}"
+          cd environments/${{ github.event.inputs.namespace }}
           terragrunt apply --auto-approve
 
       - name: Run some Tests against LocalStack
