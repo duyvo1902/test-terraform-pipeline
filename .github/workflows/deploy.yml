@@ -12,6 +12,7 @@ on:
           - "dev"
           - "bdd"
           - "qa"
+          - "abc"
 
 jobs:
   automation:
@@ -38,9 +39,9 @@ jobs:
         uses: autero1/action-terragrunt@v1.3.2
         with:
           terragrunt_version: '0.46.3'
+
       - name: 'Terragrunt Plan'
         run: |
-          echo "namespace=${{ github.event.inputs.namespace }}"
           cd environments/${{ github.event.inputs.namespace }}
           terragrunt apply --auto-approve
 
