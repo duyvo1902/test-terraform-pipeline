@@ -29,41 +29,13 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
 
-      - name: Create new S3 bucket
-        run: |
-          aws --endpoint-url http://localhost:4566 s3api create-bucket --bucket my-bucket --region us-east-1
-          aws configure list
-          aws --endpoint-url http://localhost:4566 s3api list-buckets
-        env: 
-          AWS_ACCESS_KEY_ID: "test"
-          AWS_SECRET_ACCESS_KEY: "test"
-          AWS_REGION: "us-east-1"
-
-      - name: Setup and run Terragrunt
-        uses: gruntwork-io/terragrunt-action@v1
+      - name: 'Terragrunt Setup'
+        uses: autero1/action-terragrunt@v1.3.2
         with:
-          tf_version: '1.4.6'
-          tg_version: '0.46.3'
-          tg_dir: './environments/bdd'
-          tg_command: 'apply --auto-approve'
-        env: 
-          AWS_ACCESS_KEY_ID: "test"
-          AWS_SECRET_ACCESS_KEY: "test"
-          AWS_REGION: "us-east-1" 
-
-      # - name: Terraform Init
-      #   id: init
-      #   run: |
-      #     cd src
-      #     terraform fmt
-      #     terraform init -upgrade
-
-      # - name: Terraform Apply
-      #   run: terraform apply --auto-approve
-      #   env:
-      #     AWS_ACCESS_KEY_ID: "test"
-      #     AWS_SECRET_ACCESS_KEY: "test"
-      #     AWS_REGION: "us-east-1"
+          terragrunt_version: '0.46.3'
+      - name: 'Terragrunt Plan'
+        run: |
+          terragrunt apply --auto-approve
 
       - name: Run some Tests against LocalStack
         run: |
