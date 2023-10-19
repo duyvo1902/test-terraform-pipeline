@@ -44,6 +44,7 @@ jobs:
         run: |
           cd environments/${{ github.event.inputs.namespace }}
           terragrunt apply --auto-approve
+          ls
 
       - name: Validate on Localstack
         run: |
