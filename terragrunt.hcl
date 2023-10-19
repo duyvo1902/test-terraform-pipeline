@@ -2,12 +2,16 @@ generate "main" {
   path = "main.tf"
   if_exists = "overwrite_terragrunt"
   contents = <<EOF
-resource "aws_s3_bucket" "test" {
+resource "aws_s3_bucket" "test_2" {
   bucket = "my-bucket"
   tags = {
     Name       = "My bucket"
     Enviroment = "Dev"
   }
+}
+resource "aws_s3_object" "test_2" {
+  bucket       = "my-bucket"
+  key          = "${path_relative_to_include()}/terraform.tfstate"
 }
 EOF
 }
@@ -27,22 +31,6 @@ provider "aws" {
 
   endpoints {
     s3 = "http://localhost:4566"
-  }
-}
-EOF
-}
-
-generate "backend" {
-  path      = "backend.tf"
-  if_exists = "overwrite_terragrunt"
-  contents = <<EOF
-terraform {
-  backend "s3" {
-    bucket         = "my-bucket"
-    key            = "${path_relative_to_include()}/terraform.tfstate"
-    region         = "us-east-1"
-    encrypt        = true
-    dynamodb_table = "my-lock-table"
   }
 }
 EOF
