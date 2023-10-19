@@ -12,7 +12,7 @@ on:
           - "dev"
           - "bdd"
           - "qa"
-          - "abc"
+          - "wrong"
 
 jobs:
   automation:
@@ -35,17 +35,17 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
 
-      - name: 'Terragrunt Setup'
+      - name: Setup Terragrunt
         uses: autero1/action-terragrunt@v1.3.2
         with:
           terragrunt_version: '0.46.3'
 
-      - name: 'Terragrunt Plan'
+      - name: Terragrunt Plan
         run: |
           cd environments/${{ github.event.inputs.namespace }}
           terragrunt apply --auto-approve
 
-      - name: Run some Tests against LocalStack
+      - name: Validate on Localstack
         run: |
           echo "Check new S3 bucket"
           aws --endpoint-url http://localhost:4566 s3api list-buckets

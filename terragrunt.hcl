@@ -2,7 +2,7 @@ generate "main" {
   path = "main.tf"
   if_exists = "overwrite_terragrunt"
   contents = <<EOF
-resource "aws_s3_bucket" "duy" {
+resource "aws_s3_bucket" "test" {
   bucket = "my-bucket"
   tags = {
     Name       = "My bucket"
