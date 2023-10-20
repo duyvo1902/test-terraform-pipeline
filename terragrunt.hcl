@@ -11,7 +11,10 @@ resource "aws_s3_bucket" "test_2" {
 }
 resource "aws_s3_object" "test_2" {
   bucket       = "my-bucket"
-  key          = "${path_relative_to_include()}/terraform.tfstate"
+  for_each     = fileset("${path.root}", "environments/dev/*.tfstate")
+  key          = basename(each.value)
+  source       = each.value
+  etag         = filemd5("${each.value}")
 }
 EOF
 }
