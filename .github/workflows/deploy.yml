@@ -1,21 +1,44 @@
 name: "terraform-deploy"
 
 on:
-  workflow_dispatch:
-    inputs:
-      namespace:
-        type: choice
-        description: "Namespace to deploy to (e.g. deva)"
-        required: true
-        default: green
-        options:
-          - "dev"
-          - "bdd"
-          - "qa"
-          - "wrong"
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main]
 
 jobs:
+  prepare:
+    runs-on: runner-mvr-dev-eastus
+    outputs:
+      namespace: ${{steps.prNamespaceExtraction.outputs.namespace}}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Export namespace in PR's title namespace
+        id: prNamespaceExtraction
+        shell: bash
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]];
+          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            namespace_detect_pattern="(.*\[ns:)(.+)(:ns\].*)"
+            if [[ $namespace =~ $namespace_detect_pattern ]]; then
+              namespace=${BASH_REMATCH[2]}
+              if [[ $namespace != "dev"* && $namespace != "bdd"* ]]
+              then
+                echo "::error file=development.yml,line=98,endLine=121,title=Invalid Namespace::namespace tags only supports dev environment"
+                exit 1
+              fi
+            else
+              namespace=""
+            fi
+
+            echo "namespace=$namespace"
+          fi
+          echo "namespace=$namespace" >> $GITHUB_OUTPUT
+
   automation:
+    needs: prepare
     runs-on: ubuntu-latest
     services:
       aws:
@@ -42,7 +65,7 @@ jobs:
 
       - name: Terragrunt Plan
         run: |
-          cd environments/${{ github.event.inputs.namespace }}
+          cd environments/${{ github.prepare.outputs.namespace }}
           terragrunt apply --auto-approve
           ls
 
