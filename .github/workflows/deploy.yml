@@ -19,20 +19,19 @@ jobs:
         id: prNamespaceExtraction
         shell: bash
         run: |
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]];
-          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            namespace="dev"
+          else
             namespace_detect_pattern="(.*\[ns:)(.+)(:ns\].*)"
             if [[ $namespace =~ $namespace_detect_pattern ]]; then
               namespace=${BASH_REMATCH[2]}
-              if [[ $namespace != "dev"* && $namespace != "bdd"* ]]
-              then
+              if [[ $namespace != "dev"* && $namespace != "bdd"* ]] then
                 echo "::error file=development.yml,line=98,endLine=121,title=Invalid Namespace::namespace tags only supports dev environment"
                 exit 1
               fi
             else
               namespace=""
             fi
-
             echo "namespace=$namespace"
           fi
           echo "namespace=$namespace" >> $GITHUB_OUTPUT
