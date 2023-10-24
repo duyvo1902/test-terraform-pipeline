@@ -50,7 +50,7 @@ jobs:
         run: |
           echo "Check new S3 bucket"
           aws --endpoint-url http://localhost:4566 s3api list-buckets
-          aws s3api --endpoint-url http://s3.localhost.localstack.cloud:4566 list-objects --bucket my-bucket --query 'Contents[].{Key: Key, Size: Size}'
+          aws s3api --endpoint-url http://localhost:4566 list-objects --bucket my-bucket --query 'Contents[].{Key: Key, Size: Size}'
         env: 
           AWS_ACCESS_KEY_ID: "test"
           AWS_SECRET_ACCESS_KEY: "test"
