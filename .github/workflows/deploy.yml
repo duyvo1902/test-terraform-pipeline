@@ -8,7 +8,7 @@ on:
 
 jobs:
   prepare:
-    runs-on: runner-mvr-dev-eastus
+    runs-on: ubuntu-latest
     outputs:
       namespace: ${{steps.prNamespaceExtraction.outputs.namespace}}
     steps:
