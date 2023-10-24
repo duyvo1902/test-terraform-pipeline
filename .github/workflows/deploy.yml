@@ -6,6 +6,9 @@ on:
   push:
     branches: [main]
 
+env:
+  namespace: 'dev'
+
 jobs:
   prepare:
     runs-on: ubuntu-latest
@@ -60,7 +63,7 @@ jobs:
 
       - name: Terragrunt Plan
         run: |
-          cd environments/${{ github.prepare.outputs.namespace }}
+          cd environments/$namespace
           terragrunt apply --auto-approve
           ls
 
