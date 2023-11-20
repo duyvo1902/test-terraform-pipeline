@@ -48,6 +48,17 @@ jobs:
         uses: autero1/action-terragrunt@v1.3.2
         with:
           terragrunt_version: '0.46.3'
+      # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+      - name: Terragrunt Init
+        run: terragrunt init -backend=false
+
+      # Validate terraform files
+      - name: Terragrunt Validate
+        run: terragrunt validate
+
+      # Checks that all Terraform configuration files adhere to a canonical format
+      - name: Terragrunt Format
+        run: terragrunt fmt -check -recursive
 
       - name: Terragrunt Plan
         run: |
