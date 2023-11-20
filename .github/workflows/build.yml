@@ -64,6 +64,10 @@ jobs:
           cd environments/${{steps.prNamespaceExtraction.outputs.namespace}}
           terragrunt apply --auto-approve
 
+      - name: Terragrunt format
+        id: format
+        run: terragrunt hclfmt -recursive --terragrunt-check
+
       - name: Validate on Localstack
         run: |
           echo "Check new S3 bucket"
