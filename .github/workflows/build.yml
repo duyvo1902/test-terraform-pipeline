@@ -51,6 +51,10 @@ jobs:
         with:
           terragrunt_version: '0.46.3'
 
+      # Checks that all Terraform configuration files adhere to a canonical format
+      - name: Terragrunt Format
+        run: (terragrunt hclfmt -recursive --terragrunt-check -working-directory=environments/${{steps.prNamespaceExtraction.outputs.namespace}} && echo "code format OK") || (echo "code format inconsistency on the files above. Execute 'terragrunt hclfmt -recursive' to fix it" && exit 1)
+
       # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
       - name: Terragrunt Init
         run: terragrunt init -backend=false
@@ -63,10 +67,6 @@ jobs:
         run: |
           cd environments/${{steps.prNamespaceExtraction.outputs.namespace}}
           terragrunt apply --auto-approve
-
-      - name: Terragrunt format
-        id: format
-        run: terragrunt hclfmt -recursive --terragrunt-check
 
       - name: Validate on Localstack
         run: |
