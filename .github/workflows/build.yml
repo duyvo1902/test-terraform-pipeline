@@ -64,13 +64,8 @@ jobs:
         id: tf-plan-string
         run: |
           TERRAGRUNT_PLAN=$(terragrunt plan)
-          
-          echo "<details><summary>Click to expand</summary>" >> $GITHUB_OUTPUT
-          echo "" >> $GITHUB_OUTPUT
-          echo '```terraform' >> $GITHUB_OUTPUT
+          echo "TERRAGRUNT_PLAN=$TERRAGRUNT_PLAN"
           echo "$TERRAGRUNT_PLAN" >> $GITHUB_OUTPUT
-          echo '```' >> $GITHUB_OUTPUT
-          echo "</details>" >> $GITHUB_OUTPUT
 
       - name: Terragrunt Plan
         id: tg-plan
