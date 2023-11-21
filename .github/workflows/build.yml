@@ -69,7 +69,7 @@ jobs:
       - name: Create String Output
         id: tf-plan-string
         run: |
-          TERRAGRUNT_PLAN=$(terragrunt plan)
+          TERRAGRUNT_PLAN=$(terragrunt plan -no-color)
           delimiter="$(openssl rand -hex 8)"
           echo "summary<<${delimiter}" >> $GITHUB_OUTPUT
           echo "## TERRAGRUNT Plan Output" >> $GITHUB_OUTPUT
