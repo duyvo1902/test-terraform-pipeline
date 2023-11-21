@@ -7,7 +7,7 @@ resource "aws_s3_bucket" "test_2" {
   }
 }
 resource "aws_s3_object" "test_2" {
-  bucket = "my-bucket"
-  key    = "terraform.tfstate"
-  source = "terraform.tfstate"
+  bucket       = "my-bucket"
+  key          = "terraform.tfstate"
+  source       = "terraform.tfstate"
 }
