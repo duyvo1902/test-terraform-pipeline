@@ -9,7 +9,7 @@ Used as boilerplate code to scaffold out a small serverless AWS application usin
 
 1.) You'll need an AWS account.
 
-2.) Create an S3 bucket in your AWS account and replace the `api-gateway-lambda-dynamodb` bucket name in `main.tf` with your bucket name.
+2.) Create an S3 bucket in your AWN account and replace the `api-gateway-lambda-dynamodb` bucket name in `main.tf` with your bucket name.
 
 3.) `us-west-1` is hard coded in `main.tf`. If you're deploying this app to another region you need to update the `region` in `main.tf`.
 
