@@ -28,6 +28,7 @@ jobs:
           - 4566:4566
     outputs:
       tfplanExitCode: ${{ steps.tf-plan.outputs.exitcode }}
+      namespaceName: ${{ secrets.prNamespaceExtraction.namespace }}
 
     steps:
       # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
@@ -117,7 +118,7 @@ jobs:
               })
 
   terragrunt-apply:
-    name: 'Terraform Apply'
+    name: 'terraform-apply'
     runs-on: ubuntu-latest
     # Start localstack as services and export port number
     services:
@@ -172,7 +173,7 @@ jobs:
 
     - name: Terragrunt Apply
       run: |
-        cd environments/${{steps.prNamespaceExtraction.outputs.namespace}}
+        cd environments/${{needs.prNamespaceExtraction.output.namespace}}
         terragrunt apply -auto-approve
 
     - name: Validate on Localstack
