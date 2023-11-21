@@ -63,7 +63,7 @@ jobs:
       - name: Create String Output
         id: tf-plan-string
         run: |
-          TERRAGRUNT_PLAN=$(terragrunt plan)
+          TERRAGRUNT_PLAN=${terragrunt plan -no-color}
           echo "TERRAGRUNT_PLAN=$TERRAGRUNT_PLAN"
           echo "TERRAGRUNT_PLAN=$TERRAGRUNT_PLAN" >> $GITHUB_OUTPUT
 
