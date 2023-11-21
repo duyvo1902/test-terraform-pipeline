@@ -59,11 +59,26 @@ jobs:
       - name: Terragrunt Validate
         run: terragrunt validate
 
-      - name: Terragrunt Plan
+      # - name: Terragrunt Plan
+      #   run: |
+      #     terragrunt apply --auto-approve
+
+      - name: Terraform Plan
+        id: tg-plan
         run: |
           cd environments/${{steps.prNamespaceExtraction.outputs.namespace}}
-          terragrunt apply --auto-approve
+          export exitcode=0
+          terragrunt plan -detailed-exitcode -no-color -out tfplan || export exitcode=$?
 
+          echo "exitcode=$exitcode" >> $GITHUB_OUTPUT
+          
+          if [ $exitcode -eq 1 ]; then
+            echo Terraform Plan Failed!
+            exit 1
+          else 
+            exit 0
+          fi
+    
       # Save plan to artifacts  
       - name: Publish Terraform Plan
         uses: actions/upload-artifact@v3
