@@ -59,9 +59,20 @@ jobs:
       - name: Terragrunt Validate
         run: terragrunt validate
 
-      # - name: Terragrunt Plan
-      #   run: |
-      #     terragrunt apply --auto-approve
+      # Create string output of Terraform Plan
+      - name: Create String Output
+        id: tf-plan-string
+        run: |
+          TERRAFORM_PLAN=$(terraform show -no-color tfplan)
+          
+          echo "summary<<${delimiter}" >> $GITHUB_OUTPUT
+          echo "## Terraform Plan Output" >> $GITHUB_OUTPUT
+          echo "<details><summary>Click to expand</summary>" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          echo '```terraform' >> $GITHUB_OUTPUT
+          echo "$TERRAFORM_PLAN" >> $GITHUB_OUTPUT
+          echo '```' >> $GITHUB_OUTPUT
+          echo "</details>" >> $GITHUB_OUTPUT
 
       - name: Terragrunt Plan
         id: tg-plan
@@ -79,12 +90,22 @@ jobs:
             exit 0
           fi
 
-      # Publish Terraform Plan as task summary
-      - name: Publish Terraform Plan to Task Summary
+      # If this is a PR post the changes
+      - name: Push Terraform Output to PR
+        if: github.ref != 'refs/heads/main'
+        uses: actions/github-script@v6
         env:
-          SUMMARY: ${{steps.prNamespaceExtraction.outputs.namespace}}
-        run: |
-          echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
+          SUMMARY: "${{ steps.tf-plan-string.outputs.summary }}"
+        with:
+            github-token: ${{ secrets.GITHUB_TOKEN }}
+            script: |
+              const body = `${process.env.SUMMARY}`;
+              github.rest.issues.createComment({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  body: body
+              })
 
       # Terragrunt Apply
       - name: Terragrunt Apply
