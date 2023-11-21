@@ -98,7 +98,6 @@ jobs:
         env:
           SUMMARY: "${{ steps.tf-plan-string.outputs.summary }}"
         with:
-            github-token: ${{ secrets.GITHUB_TOKEN }}
             script: |
               const body = `${process.env.SUMMARY}`;
               github.rest.issues.createComment({
