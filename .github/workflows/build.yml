@@ -65,7 +65,7 @@ jobs:
         run: |
           TERRAGRUNT_PLAN=$(terragrunt plan)
           echo "TERRAGRUNT_PLAN=$TERRAGRUNT_PLAN"
-          echo "$TERRAGRUNT_PLAN" >> $GITHUB_OUTPUT
+          echo "TERRAGRUNT_PLAN=$TERRAGRUNT_PLAN" >> $GITHUB_OUTPUT
 
       - name: Terragrunt Plan
         id: tg-plan
