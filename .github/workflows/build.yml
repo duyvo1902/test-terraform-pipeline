@@ -143,8 +143,8 @@ jobs:
         echo "namespace=$namespace"
         echo "namespace=$namespace" >> $GITHUB_OUTPUT
 
-        - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
 
     - name: Setup Terragrunt
       uses: autero1/action-terragrunt@v1.3.2
