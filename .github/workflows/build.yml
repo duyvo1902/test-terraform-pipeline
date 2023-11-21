@@ -82,7 +82,7 @@ jobs:
       # Publish Terraform Plan as task summary
       - name: Publish Terraform Plan to Task Summary
         env:
-          SUMMARY: ${{ steps.tf-plan-string.output.summary }}
+          SUMMARY: ${{steps.prNamespaceExtraction.outputs.namespace}}
         run: |
           echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
 
