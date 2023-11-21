@@ -63,7 +63,7 @@ jobs:
       #   run: |
       #     terragrunt apply --auto-approve
 
-      - name: Terraform Plan
+      - name: Terragrunt Plan
         id: tg-plan
         run: |
           cd environments/${{steps.prNamespaceExtraction.outputs.namespace}}
@@ -78,30 +78,19 @@ jobs:
           else 
             exit 0
           fi
-    
-      # Save plan to artifacts  
-      - name: Publish Terraform Plan
-        uses: actions/upload-artifact@v3
-        with:
-          name: tfplan
-          path: tfplan
           
       # Create string output of Terraform Plan
       - name: Create String Output
         id: tf-plan-string
         run: |
           TERRAFORM_PLAN=$(terraform show -no-color tfplan)
-          
-          delimiter="$(openssl rand -hex 8)"
           echo "summary<<${delimiter}" >> $GITHUB_OUTPUT
           echo "## Terraform Plan Output" >> $GITHUB_OUTPUT
-          echo "<details><summary>Click to expand</summary>" >> $GITHUB_OUTPUT
-          echo "" >> $GITHUB_OUTPUT
-          echo '```terraform' >> $GITHUB_OUTPUT
-          echo "$TERRAFORM_PLAN" >> $GITHUB_OUTPUT
-          echo '```' >> $GITHUB_OUTPUT
-          echo "</details>" >> $GITHUB_OUTPUT
-          echo "${delimiter}" >> $GITHUB_OUTPUT
+
+
+      # Terragrunt Apply
+      - name: Terragrunt Apply
+        run: Terragrunt apply -auto-approve tfplan
 
       - name: Validate on Localstack
         run: |
