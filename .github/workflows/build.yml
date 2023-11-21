@@ -119,6 +119,17 @@ jobs:
   terragrunt-apply:
     name: 'Terraform Apply'
     runs-on: ubuntu-latest
+    # Start localstack as services and export port number
+    services:
+      aws:
+        image: localstack/localstack:2.1.0
+        env:
+          DEFAULT_REGION: us-east-1
+          AWS_ACCESS_KEY_ID: "test"
+          AWS_SECRET_ACCESS_KEY: "test"
+          AWS_PARAMSTORE_ENABLED: "false"
+        ports:
+          - 4566:4566
     needs: [terragrunt-plan]
 
     steps:
