@@ -68,7 +68,7 @@ jobs:
         run: |
           cd environments/${{steps.prNamespaceExtraction.outputs.namespace}}
           export exitcode=0
-          terragrunt plan -detailed-exitcode -no-color -out tfplan || export exitcode=$?
+          terragrunt plan -detailed-exitcode -no-color || export exitcode=$?
 
           echo "exitcode=$exitcode" >> $GITHUB_OUTPUT
           
@@ -88,7 +88,8 @@ jobs:
 
       # Terragrunt Apply
       - name: Terragrunt Apply
-        run: Terragrunt apply -auto-approve tfplan
+        run: |
+          terragrunt apply "tfplan" -auto-approve
 
       - name: Validate on Localstack
         run: |
