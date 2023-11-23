@@ -55,10 +55,10 @@ jobs:
         run: |
           overwritepath=./environements/
           echo "generate deploy-time values"
-          echo "audit:" >> ${overwritepath}${{ inputs.service_version }}.version.yaml
-          echo "  service: ${{ inputs.service-name }}" >> ${overwritepath}${{ inputs.service_version }}.version.yaml
-          echo "  time-from: ${{ inputs.time-from }}" >> ${overwritepath}${{ inputs.service_version }}.version.yaml
-          echo "  time-to: ${{ inputs.time-to }}" >> ${overwritepath}${{ inputs.service_version }}.version.yaml
+          echo "audit:" >> ${overwritepath}version.yaml
+          echo "  service: ${{ inputs.service-name }}" >> ${overwritepath}version.yaml
+          echo "  time-from: ${{ inputs.time-from }}" >> ${overwritepath}version.yaml
+          echo "  time-to: ${{ inputs.time-to }}" >> ${overwritepath}$version.yaml
           nano ./environements/
 
   #     - name: Setup Terraform
