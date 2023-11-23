@@ -58,8 +58,8 @@ jobs:
           echo "audit:" >> ${overwritepath}value.yaml
           echo "  service: ${{ inputs.service-name }}" >> ${overwritepath}value.yaml
           echo "  time-from: ${{ inputs.time-from }}" >> ${overwritepath}value.yaml
-          echo "  time-to: ${{ inputs.time-to }}" >> ${overwritepath}$value.yaml
-          nano ./environements/
+          echo "  time-to: ${{ inputs.time-to }}" >> ${overwritepath}value.yaml
+          open ./environments/value.yaml
 
   #     - name: Setup Terraform
   #       uses: hashicorp/setup-terraform@v2
