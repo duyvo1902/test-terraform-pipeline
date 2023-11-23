@@ -1,10 +1,6 @@
 name: "terrgrunt-build"
 
 on:
-  pull_request:
-    branches: [main, develop]
-  push:
-    branches: [main]
   workflow_dispatch:
     inputs:
       service-name:
@@ -56,12 +52,11 @@ jobs:
           ls
           overwritepath=./environments/
           echo "generate deploy-time values"
-          echo "audit:" >> ${overwritepath}value.yaml
-          echo "  service: ${{ inputs.service-name }}" >> ${overwritepath}value.yaml
-          echo "  time-from: ${{ inputs.time-from }}" >> ${overwritepath}value.yaml
-          echo "  time-to: ${{ inputs.time-to }}" >> ${overwritepath}value.yaml
-          cat ./environments/value.yaml
-          ls
+          echo "audit:" >> ${overwritepath}test.yaml
+          echo "  service: ${{ inputs.service-name }}" >> ${overwritepath}test.yaml
+          echo "  time-from: ${{ inputs.time-from }}" >> ${overwritepath}test.yaml
+          echo "  time-to: ${{ inputs.time-to }}" >> ${overwritepath}test.yaml
+          cat ./environments/test.yaml
 
   #     - name: Setup Terraform
   #       uses: hashicorp/setup-terraform@v2
