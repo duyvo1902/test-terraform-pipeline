@@ -53,6 +53,7 @@ jobs:
       - name: Override value file
         shell: bash
         run: |
+          ls
           overwritepath=./environments/
           echo "generate deploy-time values"
           echo "audit:" >> ${overwritepath}value.yaml
