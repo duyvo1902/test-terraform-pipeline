@@ -63,11 +63,11 @@ jobs:
 
           # Ignore exit codes for the wait command
           set +e
-          kubectl wait --for=condition=Ready job/${{ inputs.service-name }} --timeout=10s 2>/dev/null
+          kubectl wait --for=condition=Ready job/${{ inputs.service-name }} --timeout=20s 2>/dev/null
           set -e
           
           # kubectl wait --for=condition=Ready job/${{ inputs.service-name }} --timeout=1000s
-          kubectl logs job/${{ inputs.service-name }} --follow --pod-running-timeout=1000s
+          kubectl logs job/${{ inputs.service-name }} --follow --pod-running-timeout=1000s --ignore-errors=true
           
   #     - name: Setup Terraform
   #       uses: hashicorp/setup-terraform@v2
