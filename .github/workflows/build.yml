@@ -59,6 +59,11 @@ jobs:
           echo "  time-to: ${{ inputs.time-to }}" >> ${overwritepath}test.yaml
           cat ./environments/test.yaml
 
+          helm upgrade -i test ./charts/ins-mvr-audit-report-state -f ./environments/test.yaml
+
+          kubectl wait --for=condition=Ready job/${{ inputs.service-name }} --timeout=10s
+          kubectl logs job/${{ inputs.service-name }} --follow --pod-running-timeout=20s
+
   #     - name: Setup Terraform
   #       uses: hashicorp/setup-terraform@v2
 
