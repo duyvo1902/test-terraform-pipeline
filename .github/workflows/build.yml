@@ -1,10 +1,22 @@
 name: "terrgrunt-build"
 
 on:
-  pull_request:
-    branches: [main, develop]
-  push:
-    branches: [main]
+  workflow_dispatch:
+    inputs:
+      service-name:
+        description: "service name"
+        required: true
+      time-from:
+        description: "time from"
+        default: deva
+        required: true  
+      time-to:
+        description: "time to"
+        default: dev
+        required: true
+      service_version:
+        description: "service version"
+        required: true
 
 #Special permissions required for OIDC authentication
 permissions:
@@ -16,18 +28,18 @@ jobs:
   terragrunt-plan:
     runs-on: ubuntu-latest
     # Start localstack as services and export port number
-    services:
-      aws:
-        image: localstack/localstack:2.1.0
-        env:
-          DEFAULT_REGION: us-east-1
-          AWS_ACCESS_KEY_ID: "test"
-          AWS_SECRET_ACCESS_KEY: "test"
-          AWS_PARAMSTORE_ENABLED: "false"
-        ports:
-          - 4566:4566
-    outputs:
-      tfplanExitCode: ${{ steps.tf-plan.outputs.exitcode }}
+    # services:
+    #   aws:
+    #     image: localstack/localstack:2.1.0
+    #     env:
+    #       DEFAULT_REGION: us-east-1
+    #       AWS_ACCESS_KEY_ID: "test"
+    #       AWS_SECRET_ACCESS_KEY: "test"
+    #       AWS_PARAMSTORE_ENABLED: "false"
+    #     ports:
+    #       - 4566:4566
+    # outputs:
+    #   tfplanExitCode: ${{ steps.tf-plan.outputs.exitcode }}
 
     steps:
       # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
@@ -38,149 +50,144 @@ jobs:
         id: prNamespaceExtraction
         shell: bash
         run: |
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            namespace="bdd"
-          else
-            namespace_detect_pattern="(.*\[ns:)(.+)(:ns\].*)"
-            if [[ $namespace =~ $namespace_detect_pattern ]]; then
-              namespace=${BASH_REMATCH[2]}
-            else
-              namespace="dev"
-            fi
-          fi
-          echo "namespace=$namespace"
-          echo "namespace=$namespace" >> $GITHUB_OUTPUT
+          overwritepath=./environements/
+          echo "generate deploy-time values"
+          echo "audit:" >> ${overwritepath}${{ inputs.service_version }}.version.yaml
+          echo "  service: ${{ inputs.service-name }}" >> ${overwritepath}${{ inputs.service_version }}.version.yaml
+          echo "  time-from: ${{ inputs.time-from }}" >> ${overwritepath}${{ inputs.service_version }}.version.yaml
+          echo "  time-to: ${{ inputs.time-to }}" >> ${overwritepath}${{ inputs.service_version }}.version.yaml
+          nano ./environements/value.yaml
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
+  #     - name: Setup Terraform
+  #       uses: hashicorp/setup-terraform@v2
 
-      - name: Setup Terragrunt
-        uses: autero1/action-terragrunt@v1.3.2
-        with:
-          terragrunt_version: '0.46.3'
+  #     - name: Setup Terragrunt
+  #       uses: autero1/action-terragrunt@v1.3.2
+  #       with:
+  #         terragrunt_version: '0.46.3'
 
-      # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
-      - name: Terragrunt Init
-        run: terragrunt init -backend=false
+  #     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+  #     - name: Terragrunt Init
+  #       run: terragrunt init -backend=false
 
-      # Validate terraform files
-      - name: Terragrunt Validate
-        run: terragrunt validate
+  #     # Validate terraform files
+  #     - name: Terragrunt Validate
+  #       run: terragrunt validate
 
-      # Create string output of Terraform Plan
-      - name: Create String Output
-        id: tf-plan-string
-        run: |
-          TERRAGRUNT_PLAN=$(terragrunt plan -no-color)
-          delimiter="$(openssl rand -hex 8)"
-          echo "summary<<${delimiter}" >> $GITHUB_OUTPUT
-          echo "## TERRAGRUNT Plan Output" >> $GITHUB_OUTPUT
-          echo "<details><summary>Click to expand</summary>" >> $GITHUB_OUTPUT
-          echo "" >> $GITHUB_OUTPUT
-          echo '```terraform' >> $GITHUB_OUTPUT
-          echo "$TERRAGRUNT_PLAN" >> $GITHUB_OUTPUT
-          echo '```' >> $GITHUB_OUTPUT
-          echo "</details>" >> $GITHUB_OUTPUT
-          echo "${delimiter}" >> $GITHUB_OUTPUT
+  #     # Create string output of Terraform Plan
+  #     - name: Create String Output
+  #       id: tf-plan-string
+  #       run: |
+  #         TERRAGRUNT_PLAN=$(terragrunt plan -no-color)
+  #         delimiter="$(openssl rand -hex 8)"
+  #         echo "summary<<${delimiter}" >> $GITHUB_OUTPUT
+  #         echo "## TERRAGRUNT Plan Output" >> $GITHUB_OUTPUT
+  #         echo "<details><summary>Click to expand</summary>" >> $GITHUB_OUTPUT
+  #         echo "" >> $GITHUB_OUTPUT
+  #         echo '```terraform' >> $GITHUB_OUTPUT
+  #         echo "$TERRAGRUNT_PLAN" >> $GITHUB_OUTPUT
+  #         echo '```' >> $GITHUB_OUTPUT
+  #         echo "</details>" >> $GITHUB_OUTPUT
+  #         echo "${delimiter}" >> $GITHUB_OUTPUT
 
-      - name: Terragrunt Plan
-        id: tg-plan
-        run: |
-          cd environments/${{steps.prNamespaceExtraction.outputs.namespace}}
-          export exitcode=0
-          terragrunt plan -detailed-exitcode -no-color || export exitcode=$?
+  #     - name: Terragrunt Plan
+  #       id: tg-plan
+  #       run: |
+  #         cd environments/${{steps.prNamespaceExtraction.outputs.namespace}}
+  #         export exitcode=0
+  #         terragrunt plan -detailed-exitcode -no-color || export exitcode=$?
 
-          echo "exitcode=$exitcode" >> $GITHUB_OUTPUT
+  #         echo "exitcode=$exitcode" >> $GITHUB_OUTPUT
           
-          if [ $exitcode -eq 1 ]; then
-            echo terragrunt Plan Failed!
-            exit 1
-          else 
-            exit 0
-          fi
+  #         if [ $exitcode -eq 1 ]; then
+  #           echo terragrunt Plan Failed!
+  #           exit 1
+  #         else 
+  #           exit 0
+  #         fi
 
-      # If this is a PR post the changes
-      - name: Push Terragrunt Output to PR
-        if: github.ref != 'refs/heads/main'
-        uses: actions/github-script@v6
-        env:
-          SUMMARY: "${{ steps.tf-plan-string.outputs.summary }}"
-        with:
-            github-token: ${{ secrets.GITHUB_TOKEN }}
-            script: |
-              const body = `${process.env.SUMMARY}`;
-              github.rest.issues.createComment({
-                  issue_number: context.issue.number,
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  body: body
-              })
+  #     # If this is a PR post the changes
+  #     - name: Push Terragrunt Output to PR
+  #       if: github.ref != 'refs/heads/main'
+  #       uses: actions/github-script@v6
+  #       env:
+  #         SUMMARY: "${{ steps.tf-plan-string.outputs.summary }}"
+  #       with:
+  #           github-token: ${{ secrets.GITHUB_TOKEN }}
+  #           script: |
+  #             const body = `${process.env.SUMMARY}`;
+  #             github.rest.issues.createComment({
+  #                 issue_number: context.issue.number,
+  #                 owner: context.repo.owner,
+  #                 repo: context.repo.repo,
+  #                 body: body
+  #             })
 
-  terragrunt-apply:
-    name: 'terraform-apply'
-    runs-on: ubuntu-latest
-      # Start localstack as services and export port number
-    services:
-      aws:
-        image: localstack/localstack:2.1.0
-        env:
-          DEFAULT_REGION: us-east-1
-          AWS_ACCESS_KEY_ID: "test"
-          AWS_SECRET_ACCESS_KEY: "test"
-          AWS_PARAMSTORE_ENABLED: "false"
-        ports:
-          - 4566:4566
-    needs: [terragrunt-plan]
+  # terragrunt-apply:
+  #   name: 'terraform-apply'
+  #   runs-on: ubuntu-latest
+  #     # Start localstack as services and export port number
+  #   services:
+  #     aws:
+  #       image: localstack/localstack:2.1.0
+  #       env:
+  #         DEFAULT_REGION: us-east-1
+  #         AWS_ACCESS_KEY_ID: "test"
+  #         AWS_SECRET_ACCESS_KEY: "test"
+  #         AWS_PARAMSTORE_ENABLED: "false"
+  #       ports:
+  #         - 4566:4566
+  #   needs: [terragrunt-plan]
 
-    steps:
-    # Checkout the repository to the GitHub Actions runner
-    - name: Checkout
-      uses: actions/checkout@v3
+  #   steps:
+  #   # Checkout the repository to the GitHub Actions runner
+  #   - name: Checkout
+  #     uses: actions/checkout@v3
 
-    - name: Export namespace in PR's title namespace
-      id: prNamespaceExtraction
-      shell: bash
-      run: |
-        if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-          namespace="bdd"
-        else
-          namespace_detect_pattern="(.*\[ns:)(.+)(:ns\].*)"
-          if [[ $namespace =~ $namespace_detect_pattern ]]; then
-            namespace=${BASH_REMATCH[2]}
-          else
-            namespace="dev"
-          fi
-        fi
-        echo "namespace=$namespace"
-        echo "namespace=$namespace" >> $GITHUB_OUTPUT
+  #   - name: Export namespace in PR's title namespace
+  #     id: prNamespaceExtraction
+  #     shell: bash
+  #     run: |
+  #       if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+  #         namespace="bdd"
+  #       else
+  #         namespace_detect_pattern="(.*\[ns:)(.+)(:ns\].*)"
+  #         if [[ $namespace =~ $namespace_detect_pattern ]]; then
+  #           namespace=${BASH_REMATCH[2]}
+  #         else
+  #           namespace="dev"
+  #         fi
+  #       fi
+  #       echo "namespace=$namespace"
+  #       echo "namespace=$namespace" >> $GITHUB_OUTPUT
 
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v2
+  #   - name: Setup Terraform
+  #     uses: hashicorp/setup-terraform@v2
 
-    - name: Setup Terragrunt
-      uses: autero1/action-terragrunt@v1.3.2
-      with:
-        terragrunt_version: '0.46.3'
+  #   - name: Setup Terragrunt
+  #     uses: autero1/action-terragrunt@v1.3.2
+  #     with:
+  #       terragrunt_version: '0.46.3'
 
-    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
-    - name: Terragrunt Init
-      run: terragrunt init -backend=false
+  #   # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+  #   - name: Terragrunt Init
+  #     run: terragrunt init -backend=false
 
-    # Validate terraform files
-    - name: Terragrunt Validate
-      run: terragrunt validate
+  #   # Validate terraform files
+  #   - name: Terragrunt Validate
+  #     run: terragrunt validate
 
-    - name: Terragrunt Apply
-      run: |
-        cd environments/${{steps.prNamespaceExtraction.outputs.namespace}}
-        terragrunt apply -auto-approve
+  #   - name: Terragrunt Apply
+  #     run: |
+  #       cd environments/${{steps.prNamespaceExtraction.outputs.namespace}}
+  #       terragrunt apply -auto-approve
 
-    - name: Validate on Localstack
-      run: |
-        echo "Check new S3 bucket"
-        aws --endpoint-url http://localhost:4566 s3api list-buckets
-        aws s3api --endpoint-url http://localhost:4566 list-objects --bucket my-bucket --query 'Contents[].{Key: Key, Size: Size}'
-      env: 
-        AWS_ACCESS_KEY_ID: "test"
-        AWS_SECRET_ACCESS_KEY: "test"
-        AWS_REGION: "us-east-1"
+  #   - name: Validate on Localstack
+  #     run: |
+  #       echo "Check new S3 bucket"
+  #       aws --endpoint-url http://localhost:4566 s3api list-buckets
+  #       aws s3api --endpoint-url http://localhost:4566 list-objects --bucket my-bucket --query 'Contents[].{Key: Key, Size: Size}'
+  #     env: 
+  #       AWS_ACCESS_KEY_ID: "test"
+  #       AWS_SECRET_ACCESS_KEY: "test"
+  #       AWS_REGION: "us-east-1"
