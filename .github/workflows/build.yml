@@ -60,10 +60,9 @@ jobs:
           cat ./environments/test.yaml
 
           helm upgrade -i ${{ inputs.service-name }} ./charts/ins-mvr-audit-report-state -f ./environments/test.yaml
-          kubectl get job
 
           # kubectl wait --for=condition=Ready job/${{ inputs.service-name }} --timeout=1000s
-          # kubectl logs job/${{ inputs.service-name }} --follow --pod-running-timeout=1000s
+          kubectl logs job/${{ inputs.service-name }} --follow --pod-running-timeout=1000s
           
   #     - name: Setup Terraform
   #       uses: hashicorp/setup-terraform@v2
