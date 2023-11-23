@@ -53,7 +53,6 @@ jobs:
       - name: Override value file
         shell: bash
         run: |
-          cat ./environments/value.yaml
           overwritepath=./environments/
           echo "generate deploy-time values"
           echo "audit:" >> ${overwritepath}value.yaml
@@ -61,6 +60,7 @@ jobs:
           echo "  time-from: ${{ inputs.time-from }}" >> ${overwritepath}value.yaml
           echo "  time-to: ${{ inputs.time-to }}" >> ${overwritepath}value.yaml
           cat ./environments/value.yaml
+          ls
 
   #     - name: Setup Terraform
   #       uses: hashicorp/setup-terraform@v2
