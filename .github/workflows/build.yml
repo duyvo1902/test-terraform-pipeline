@@ -49,6 +49,7 @@ jobs:
       - name: Override value file
         shell: bash
         run: |
+          kind create cluster
           ls
           overwritepath=./environments/
           echo "generate deploy-time values"
