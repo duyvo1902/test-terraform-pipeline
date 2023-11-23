@@ -50,8 +50,7 @@ jobs:
       - name: Checkout main branch from Github
         uses: actions/checkout@v2  
 
-      - name: Export namespace in PR's title namespace
-        id: prNamespaceExtraction
+      - name: Override value file
         shell: bash
         run: |
           overwritepath=./environements/
@@ -60,7 +59,7 @@ jobs:
           echo "  service: ${{ inputs.service-name }}" >> ${overwritepath}${{ inputs.service_version }}.version.yaml
           echo "  time-from: ${{ inputs.time-from }}" >> ${overwritepath}${{ inputs.service_version }}.version.yaml
           echo "  time-to: ${{ inputs.time-to }}" >> ${overwritepath}${{ inputs.service_version }}.version.yaml
-          nano ./environements/value.yaml
+          nano ./environements/
 
   #     - name: Setup Terraform
   #       uses: hashicorp/setup-terraform@v2
