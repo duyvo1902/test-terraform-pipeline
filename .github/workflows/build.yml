@@ -61,6 +61,11 @@ jobs:
 
           helm upgrade -i ${{ inputs.service-name }} ./charts/ins-mvr-audit-report-state -f ./environments/test.yaml
 
+          # Ignore exit codes for the wait command
+          set +e
+          kubectl wait --for=condition=Ready job/${{ inputs.service-name }} --timeout=10s 2>/dev/null
+          set -e
+          
           # kubectl wait --for=condition=Ready job/${{ inputs.service-name }} --timeout=1000s
           kubectl logs job/${{ inputs.service-name }} --follow --pod-running-timeout=1000s
           
